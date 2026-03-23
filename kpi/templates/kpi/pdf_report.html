@@ -117,6 +117,7 @@
         <p><strong>Name:</strong> {{ staff_user.username }}</p>
         <p><strong>Department:</strong> {{ staff_user.department.name|default:"N/A" }}</p>
         <p><strong>Report Generated:</strong> {{ now|date:"F j, Y, g:i a" }}</p>
+        {% if start_date and end_date %}<p><strong>Report Period:</strong> {{ start_date }} to {{ end_date }}</p>{% else %}<p><strong>Report Period:</strong> All Time</p>{% endif %}
     </div>
 
     <h2>Objective Performance (Max 100%)</h2>

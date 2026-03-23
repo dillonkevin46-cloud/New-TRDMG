@@ -78,15 +78,25 @@ def management_dashboard(request):
 def download_staff_report_pdf(request, staff_id):
     """
     Generates a PDF report using WeasyPrint for a specific staff member.
-    Includes Task History and KPI Graph data (Evaluations).
+    Includes Task History and KPI Graph data (Evaluations) within an optional date range.
     """
     staff_user = get_object_or_404(User, id=staff_id, role='Staff')
+
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
     # 1. Fetch Task History
     tasks = Task.objects.filter(assigned_to=staff_user).order_by('-created_at')[:50]
 
     # 2. Fetch KPI Evaluations
-    evaluations = KPIEvaluation.objects.filter(staff_member=staff_user).order_by('-date', '-created_at')[:50]
+    evaluations = KPIEvaluation.objects.filter(staff_member=staff_user)
+
+    if start_date:
+        evaluations = evaluations.filter(date__gte=start_date)
+    if end_date:
+        evaluations = evaluations.filter(date__lte=end_date)
+
+    evaluations = evaluations.order_by('-date', '-created_at')[:50]
 
     # Calculate objective averages for the PDF summary
     objectives = KPIObjective.objects.all()
@@ -94,6 +104,11 @@ def download_staff_report_pdf(request, staff_id):
 
     for obj in objectives:
         obj_evals = KPIEvaluation.objects.filter(objective=obj, staff_member=staff_user)
+        if start_date:
+            obj_evals = obj_evals.filter(date__gte=start_date)
+        if end_date:
+            obj_evals = obj_evals.filter(date__lte=end_date)
+
         if obj_evals.exists():
             avg_score = sum(e.score_value for e in obj_evals) / obj_evals.count()
             # Normalize to 100 for the CSS bar chart in the PDF (Max score is 10)
@@ -116,6 +131,8 @@ def download_staff_report_pdf(request, staff_id):
         'evaluations': evaluations,
         'kpi_data': objective_summaries, # Reuse existing variable name for the PDF template chart
         'now': timezone.now(),
+        'start_date': start_date,
+        'end_date': end_date,
     }
 
     # Render HTML template to string
