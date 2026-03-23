@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,9 +39,7 @@
     <aside class="w-64 bg-white border-r border-slate-200 flex flex-col hidden md:flex flex-shrink-0 z-10 transition-all duration-300 shadow-sm">
         <div class="h-16 flex items-center px-6 border-b border-slate-100">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl">
-                    T
-                </div>
+                <img src="{% static 'images/logo.png' %}" alt="Tradecore" class="h-8 w-auto">
                 <span class="text-xl font-bold text-slate-900 tracking-tight">Tradecore</span>
             </div>
         </div>
@@ -135,9 +134,7 @@
         <!-- Mobile Header -->
         <header class="h-16 flex items-center justify-between px-4 border-b border-slate-200 md:hidden bg-white">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold">
-                    T
-                </div>
+                <img src="{% static 'images/logo.png' %}" alt="Tradecore" class="h-8 w-auto">
                 <span class="text-lg font-bold text-slate-900">Tradecore</span>
             </div>
             <div class="flex items-center gap-3">
