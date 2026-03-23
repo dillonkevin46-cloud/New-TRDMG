@@ -8,4 +8,5 @@ urlpatterns = [
     path('objective/add/', views.KPIObjectiveCreateView.as_view(), name='objective_create'),
     path('evaluate/add/', views.KPIEvaluationCreateView.as_view(), name='evaluation_create'),
     path('staff/<int:staff_id>/report/', views.download_staff_report_pdf, name='download_staff_report_pdf'),
+    path('pulse/<int:staff_id>/', views.daily_pulse_view, name='daily_pulse'),
 ]

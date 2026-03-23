@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
@@ -170,3 +171,44 @@ class KPIEvaluationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateVie
     def form_valid(self, form):
         form.instance.evaluated_by = self.request.user
         return super().form_valid(form)
+
+
+@login_required
+@management_or_superuser_required
+def daily_pulse_view(request, staff_id):
+    staff_user = get_object_or_404(User, id=staff_id, role='Staff')
+    objectives = KPIObjective.objects.all()
+
+    if request.method == 'POST':
+        # Validation pass
+        has_errors = False
+        for obj in objectives:
+            score = request.POST.get(f'score_{obj.id}')
+            reason = request.POST.get(f'reason_{obj.id}', '').strip()
+
+            if score in ['Bad', 'Very Bad'] and not reason:
+                messages.error(request, f"A reason is required for scoring {obj.title} as {score}.")
+                has_errors = True
+
+        if has_errors:
+            return render(request, 'kpi/daily_pulse.html', {'staff_user': staff_user, 'objectives': objectives})
+
+        # Save pass
+        for obj in objectives:
+            score = request.POST.get(f'score_{obj.id}')
+            reason = request.POST.get(f'reason_{obj.id}', '').strip()
+
+            if score and score != '(Blank/Skip)':
+                KPIEvaluation.objects.create(
+                    objective=obj,
+                    staff_member=staff_user,
+                    evaluated_by=request.user,
+                    score=score,
+                    reason=reason,
+                    date=timezone.now().date()
+                )
+
+        messages.success(request, f"Successfully saved daily pulse for {staff_user.get_full_name() or staff_user.username}.")
+        return redirect(f"{reverse_lazy('kpi:management_dashboard')}?staff_id={staff_id}")
+
+    return render(request, 'kpi/daily_pulse.html', {'staff_user': staff_user, 'objectives': objectives})
