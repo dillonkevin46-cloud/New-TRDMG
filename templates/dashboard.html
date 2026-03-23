@@ -8,7 +8,7 @@
     <!-- Welcome Card -->
     <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-sm text-white overflow-hidden relative">
         <div class="px-8 py-10 relative z-10">
-            <h2 class="text-3xl font-bold mb-2">Good day, {% if user.is_authenticated %}{{ user.username }}{% else %}Guest{% endif %}!</h2>
+            <h2 class="text-3xl font-bold mb-2">Good day, {{ user.first_name }}</h2>
             <p class="text-indigo-100 text-lg mb-6 max-w-2xl">Here is what's happening in your workspace today. Check your tasks, review KPIs, and stay on top of your schedule.</p>
             <div class="flex gap-4">
                 <a href="/todo/daily/" class="px-6 py-2.5 bg-white text-indigo-600 font-semibold rounded-lg shadow hover:bg-slate-50 transition-colors">Go to Tasks</a>
